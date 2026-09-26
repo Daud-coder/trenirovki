@@ -76,7 +76,9 @@ const TECH = {
   reardelt: { yt: 'разведение гантелей в наклоне задняя дельта', steps: ['Наклон почти до параллели с полом, спина ровная.', 'Разводи руки в стороны, локти чуть согнуты.', 'Лёгкий вес, без рывков.'] },
   plank: { yt: 'планка техника', steps: ['Упор на предплечьях, локти под плечами.', 'Тело — прямая линия, пресс и ягодицы напряжены.', 'Не проваливай поясницу, дыши ровно.'] },
 };
-const SECONDS = ['hang', 'plank'];
+Object.assign(TECH, typeof LIB_TECH !== 'undefined' ? LIB_TECH : {});
+const SECONDS = ['hang', 'plank', 'side_plank', 'farmer'];
+const extraDay = d => d === 'D' || d === 'M';
 
 function defaults() {
   return {
@@ -114,7 +116,7 @@ const plural = (n, a, b, c) => { const m10 = n % 10, m100 = n % 100; return m10 
 /* ================= состояние ================= */
 
 let S = load();
-const ui = { tab: 'today', wid: null, exId: null, list: false, es: null, slide: '' };
+const ui = { tab: 'today', wid: null, exId: null, list: false, es: null, slide: '', muscle: null, pick: [] };
 
 function load() {
   try {
@@ -228,9 +230,8 @@ function suggest(ex, prev, deload) {
 
 /* ================= тренировка: создание / завершение ================= */
 
-function startWorkout(day) {
+function startWorkout(day, def = S.program[day]) {
   const wk = weekInfo();
-  const def = S.program[day];
   const w = {
     id: uid(), day, title: def.title, date: today(), start: Date.now(), end: null, done: false, deload: wk.deload, warm: [],
     entries: def.ex.map(ex => {
@@ -289,7 +290,7 @@ function go(tab, wid) { ui.tab = tab; if (wid !== undefined) ui.wid = wid; rende
 function render() {
   const v = $('#view');
   v.className = ui.tab === 'workout' ? 'wk' : '';
-  v.innerHTML = { today: viewToday, workout: viewWorkout, history: viewHistory, progress: viewProgress, settings: viewSettings }[ui.tab]();
+  v.innerHTML = { today: viewToday, workout: viewWorkout, history: viewHistory, progress: viewProgress, settings: viewSettings, muscles: viewMuscles }[ui.tab]();
   const navTab = ui.tab === 'workout' ? (getW(ui.wid)?.done ? 'history' : 'today') : ui.tab;
   document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === navTab));
   if (ui.tab === 'workout') tickElapsed();
@@ -345,11 +346,15 @@ function viewToday() {
         <button class="btn" data-a="start" data-d="${nd}">Начать ${nd}</button>
       </div>
       <div class="small muted" style="margin:14px 2px 8px">Или другую:</div>
-      <div class="seg">${['A', 'B', 'C', 'D'].filter(d => d !== nd).map(d => `<button data-a="start-ask" data-d="${d}">${d}${d === 'D' ? ' · доп' : ''}</button>`).join('')}</div>`}
+      <div class="seg">${['A', 'B', 'C', 'D'].filter(d => d !== nd).map(d => `<button data-a="start-ask" data-d="${d}">${d}${d === 'D' ? ' · доп' : ''}</button>`).join('')}</div>
+      <button class="hist" data-a="tab" data-t="muscles" style="margin-top:12px">
+        <div class="daytag d">M</div>
+        <div class="t"><b>Проработать одну мышцу</b><span>Тапни мышцу — соберу упражнения для дома</span></div><span class="arrow">›</span>
+      </button>`}
 
     ${last ? `<h2>Последняя</h2>
       <button class="hist" data-a="open" data-id="${last.id}">
-        <div class="daytag ${last.day === 'D' ? 'd' : ''}">${last.day}</div>
+        <div class="daytag ${extraDay(last.day) ? 'd' : ''}">${last.day}</div>
         <div class="t"><b>${esc(last.title)}</b><span>${fmtDate(last.date)} · ${setsDone(last)} подх. · ${fmtDur(last.end - last.start)}</span></div><span class="arrow">›</span>
       </button>` : ''}`;
 }
@@ -409,7 +414,7 @@ function repsShown(e, j, prev) {
 const setTxt = (s, e) => `${e.kind !== 'bw' ? fmtW(s.w, e.kind) + '×' : ''}${s.r}`;
 
 function media(id, cls = '') {
-  if (!TECH[id]) return '';
+  if (!TECH[id] || TECH[id].noImg) return '';
   return `<button class="media ${cls}" data-a="tech" data-id="${esc(id)}" aria-label="Как делать">
     <img src="img/${id}-0.jpg" alt="" loading="lazy"><img class="b" src="img/${id}-1.jpg" alt="" loading="lazy">
     <span class="media-l">Как делать ›</span></button>`;
@@ -464,7 +469,7 @@ function viewFocus(w) {
   return `
     <div class="wbar">
       <button class="back" data-a="back" aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
-      <div class="daytag ${w.day === 'D' ? 'd' : ''}">${w.day}</div>
+      <div class="daytag ${extraDay(w.day) ? 'd' : ''}">${w.day}</div>
       <div class="t"><b>${esc(w.title)}</b><span id="elapsed"></span></div>
       <button class="pill" data-a="list-toggle">Список</button>
     </div>
@@ -487,15 +492,17 @@ function viewFocus(w) {
 function exName(id) {
   for (const d of Object.values(S.program)) { const x = d.ex.find(e => e.id === id); if (x) return x.name; }
   for (const w of S.workouts) { const x = w.entries.find(e => e.exId === id); if (x) return x.name; }
+  const l = LIB.find(e => e.id === id); if (l) return l.name;
   return '';
 }
 function techSheet(id) {
   const t = TECH[id], name = exName(id);
-  sheet(`<h3>${esc(name)}</h3>
-    ${t ? `<div class="tech-imgs">
+  const imgs = t && !t.noImg ? `<div class="tech-imgs">
       <figure><img src="img/${id}-0.jpg" alt=""><figcaption>Старт</figcaption></figure>
-      <figure><img src="img/${id}-1.jpg" alt=""><figcaption>Финиш</figcaption></figure></div>
-      <ol class="steps">${t.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>` : '<p>Для своего упражнения фото нет — посмотри видео.</p>'}
+      <figure><img src="img/${id}-1.jpg" alt=""><figcaption>Финиш</figcaption></figure></div>` : '';
+  sheet(`<h3>${esc(name)}</h3>
+    ${imgs}
+    ${t ? `<ol class="steps">${t.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>` : '<p>Для своего упражнения подсказок нет — посмотри видео.</p>'}
     <a class="btn ghost" href="https://www.youtube.com/results?search_query=${encodeURIComponent(t?.yt || name + ' техника')}" target="_blank" rel="noopener">▶ Видео техники на YouTube</a>
     <div style="height:8px"></div>
     <button class="btn" data-a="sheet-close">Понятно</button>`);
@@ -510,7 +517,7 @@ function viewWorkout() {
   return `
     <div class="wbar">
       <button class="back" data-a="back" aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
-      <div class="daytag ${w.day === 'D' ? 'd' : ''}">${w.day}</div>
+      <div class="daytag ${extraDay(w.day) ? 'd' : ''}">${w.day}</div>
       <div class="t"><b>${esc(w.title)}</b><span id="elapsed">${live ? '' : fmtDate(w.date) + ' · ' + fmtDur(w.end - w.start)}</span></div>
       ${live ? '<button class="pill" data-a="list-toggle">По одному</button>' : '<button class="btn ghost" data-a="tab" data-t="history">Готово</button>'}
     </div>
@@ -540,6 +547,112 @@ function tickElapsed() {
   f(); elapsedT = setInterval(f, 1000);
 }
 
+/* ---------- Мышцы ---------- */
+
+const MAP = {
+  front: [
+    ['traps', 'path', 'M84 40 L68 50 L84 48 Z'], ['traps', 'path', 'M96 40 L112 50 L96 48 Z'],
+    ['shoulders', 'ellipse', 64, 58, 11, 12], ['shoulders', 'ellipse', 116, 58, 11, 12],
+    ['chest', 'path', 'M89 50 C80 48 71 50 69 60 C68 72 73 82 89 82 Z'], ['chest', 'path', 'M91 50 C100 48 109 50 111 60 C112 72 107 82 91 82 Z'],
+    ['biceps', 'ellipse', 58, 89, 8, 16], ['biceps', 'ellipse', 122, 89, 8, 16],
+    ['forearms', 'ellipse', 53, 125, 7, 18, 10], ['forearms', 'ellipse', 127, 125, 7, 18, -10],
+    ['abs', 'rect', 77, 86, 26, 58, 9], ['abs', 'ellipse', 71, 112, 5, 22], ['abs', 'ellipse', 109, 112, 5, 22],
+    ['quads', 'ellipse', 79, 192, 12, 34], ['quads', 'ellipse', 101, 192, 12, 34],
+    ['calves', 'ellipse', 78, 262, 8, 24], ['calves', 'ellipse', 102, 262, 8, 24],
+  ],
+  back: [
+    ['traps', 'path', 'M270 36 L250 50 L261 56 L270 90 L279 56 L290 50 Z'],
+    ['shoulders', 'ellipse', 244, 58, 11, 12], ['shoulders', 'ellipse', 296, 58, 11, 12],
+    ['back', 'path', 'M255 58 L264 62 L268 118 C258 112 250 96 250 76 Z'], ['back', 'path', 'M285 58 L276 62 L272 118 C282 112 290 96 290 76 Z'],
+    ['back', 'rect', 259, 118, 22, 24, 6],
+    ['triceps', 'ellipse', 238, 89, 8, 16], ['triceps', 'ellipse', 302, 89, 8, 16],
+    ['forearms', 'ellipse', 233, 125, 7, 18, 10], ['forearms', 'ellipse', 307, 125, 7, 18, -10],
+    ['glutes', 'ellipse', 259, 160, 12, 14], ['glutes', 'ellipse', 281, 160, 12, 14],
+    ['glutes', 'ellipse', 258, 203, 11, 28], ['glutes', 'ellipse', 282, 203, 11, 28],
+    ['calves', 'ellipse', 258, 259, 9, 24], ['calves', 'ellipse', 282, 259, 9, 24],
+  ],
+};
+
+function weekMuscleSets() {
+  const from = ymd(addDays(new Date(), -6)), out = {};
+  for (const w of doneWorkouts()) if (w.date >= from) for (const e of w.entries) {
+    const l = LIB.find(x => x.id === e.exId); if (!l) continue;
+    const n = e.sets.filter(isPerformed).length;
+    l.m.forEach(m => out[m] = (out[m] || 0) + n);
+    l.s.forEach(m => out[m] = (out[m] || 0) + n / 2);
+  }
+  return out;
+}
+
+function bodyMap(load) {
+  const base = 'class="bm-base"';
+  const shape = ([m, t, ...a]) => {
+    const on = ui.muscle === m, n = load[m] || 0;
+    const style = on ? '' : n ? `style="fill-opacity:${(.2 + Math.min(n, 16) / 16 * .6).toFixed(2)}"` : '';
+    const cls = `class="bm ${on ? 'on' : n ? 'hot' : ''}" data-a="muscle" data-m="${m}"`;
+    if (t === 'path') return `<path ${cls} ${style} d="${a[0]}"/>`;
+    if (t === 'rect') return `<rect ${cls} ${style} x="${a[0]}" y="${a[1]}" width="${a[2]}" height="${a[3]}" rx="${a[4]}"/>`;
+    return `<ellipse ${cls} ${style} cx="${a[0]}" cy="${a[1]}" rx="${a[2]}" ry="${a[3]}" ${a[4] ? `transform="rotate(${a[4]} ${a[0]} ${a[1]})"` : ''}/>`;
+  };
+  const skel = cx => `<circle ${base} cx="${cx}" cy="20" r="14"/><rect ${base} x="${cx - 6}" y="32" width="12" height="10" rx="3"/>
+    <path ${base} d="M${cx - 16} 144 L${cx + 16} 144 L${cx + 21} 160 L${cx - 21} 160 Z"/>
+    <circle ${base} cx="${cx - 12}" cy="231" r="7"/><circle ${base} cx="${cx + 12}" cy="231" r="7"/>
+    <ellipse ${base} cx="${cx - 13}" cy="291" rx="9" ry="5"/><ellipse ${base} cx="${cx + 13}" cy="291" rx="9" ry="5"/>`;
+  return `<svg class="bodymap" viewBox="30 0 300 318" role="img" aria-label="Карта мышц">
+    ${skel(90)}${skel(270)}
+    ${MAP.front.map(shape).join('')}${MAP.back.map(shape).join('')}
+    <text class="bm-l" x="90" y="314" text-anchor="middle">спереди</text><text class="bm-l" x="270" y="314" text-anchor="middle">сзади</text>
+  </svg>`;
+}
+
+function libFor(m) {
+  const main = LIB.filter(e => e.m.includes(m)).sort((a, b) => (b.m[0] === m) - (a.m[0] === m));
+  const help = LIB.filter(e => !e.m.includes(m) && e.s.includes(m));
+  return { main, help };
+}
+const mName = id => MUSCLES.find(x => x.id === id)?.name || '';
+
+function exRow(e) {
+  const prev = lastEntry(e.id);
+  const sg = suggest(e, prev, false);
+  const wTxt = e.kind === 'bw' ? 'свой вес' : e.kind === 'bw+' ? (sg.w ? `+${fmtKg(sg.w)} кг к себе` : 'свой вес → потом + гантель')
+    : sg.w ? `${fmtKg(sg.w)} кг` : 'подбери вес';
+  const unit = SECONDS.includes(e.id) ? ' сек' : '';
+  const on = ui.pick.includes(e.id);
+  const also = [...e.m, ...e.s].filter(x => x !== ui.muscle).map(mName).join(', ').toLowerCase();
+  const img = TECH[e.id] && !TECH[e.id].noImg ? `<img src="img/${e.id}-1.jpg" alt="" loading="lazy">` : '<span>▶</span>';
+  return `<div class="mx ${on ? 'on' : ''}">
+    <button class="mx-img" data-a="tech" data-id="${e.id}" aria-label="Как делать">${img}</button>
+    <button class="mx-main" data-a="mpick" data-id="${e.id}">
+      <b>${esc(e.name)}</b>
+      <span class="num">${e.sets}×${e.min}–${e.max}${unit} · ${wTxt}</span>
+      ${prev ? `<span class="prev">прошлый раз: ${prev.sets.filter(isPerformed).map(s => setTxt(s, prev)).join(' · ')}</span>` : ''}
+      ${also ? `<span class="also">+ ${esc(also)}</span>` : ''}
+    </button>
+    <button class="mx-chk" data-a="mpick" data-id="${e.id}" aria-label="Выбрать">${CHK}</button>
+  </div>`;
+}
+
+function viewMuscles() {
+  const load = weekMuscleSets();
+  let list = '';
+  if (ui.muscle) {
+    const { main, help } = libFor(ui.muscle);
+    const picked = LIB.filter(e => ui.pick.includes(e.id));
+    const mins = Math.round(picked.reduce((a, e) => a + e.sets * (e.rest + 45), 0) / 60);
+    list = `<div id="mlist"></div><h2>${esc(mName(ui.muscle))} — ${main.length} ${plural(main.length, 'упражнение', 'упражнения', 'упражнений')} дома</h2>
+      <p class="small muted" style="margin:-4px 2px 12px">Тапни, чтобы выбрать в тренировку. Фото — техника. Вес — по твоей истории.</p>
+      ${main.map(exRow).join('')}
+      ${help.length ? `<h2>Тоже нагружают</h2>${help.map(exRow).join('')}` : ''}
+      <div class="mbar"><button class="btn" data-a="mstart" ${picked.length ? '' : 'disabled'}>
+        ${picked.length ? `Начать · ${picked.length} упр. · ~${mins} мин` : 'Выбери упражнения'}</button></div>`;
+  }
+  return `<div class="top"><div><h1>Мышцы</h1><div class="sub">Что сегодня качаем? Цвет — нагрузка за 7 дней</div></div></div>
+    <div class="card">${bodyMap(load)}</div>
+    <div class="mchips">${MUSCLES.map(m => `<button class="chip ${ui.muscle === m.id ? 'cur' : ''} ${load[m.id] ? 'done' : ''}" data-a="muscle" data-m="${m.id}">${esc(m.name)}${load[m.id] ? ` <em>${Math.round(load[m.id])}</em>` : ''}</button>`).join('')}</div>
+    ${list}`;
+}
+
 /* ---------- История ---------- */
 
 function viewHistory() {
@@ -552,7 +665,7 @@ function viewHistory() {
     const m = parseYmd(w.date).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
     if (m !== cur) { out += `<div class="month">${m}</div>`; cur = m; }
     out += `<button class="hist" data-a="open" data-id="${w.id}">
-      <div class="daytag ${w.day === 'D' ? 'd' : ''}">${w.day}</div>
+      <div class="daytag ${extraDay(w.day) ? 'd' : ''}">${w.day}</div>
       <div class="t"><b>${fmtDate(w.date)}, ${WD[parseYmd(w.date).getDay()].toLowerCase()}</b><span>${esc(w.title)} · ${setsDone(w)} подх. · ${fmtDur(w.end - w.start)}</span></div><span class="arrow">›</span></button>`;
   }
   return `<div class="top"><div><h1>История</h1><div class="sub">всего ${ws.length} ${plural(ws.length, 'тренировка', 'тренировки', 'тренировок')}</div></div></div>
@@ -854,6 +967,27 @@ document.addEventListener('click', e => {
       const en = w.entries[+b.dataset.e], last = en.sets[en.sets.length - 1];
       en.sets.push({ w: last ? last.w : '', r: '', done: false }); save();
       if (focusMode()) { ui.es = null; render(); } else refreshCard(+b.dataset.e);
+      break;
+    }
+    case 'muscle': {
+      const m = b.dataset.m;
+      if (ui.muscle !== m) { ui.muscle = m; ui.pick = libFor(m).main.slice(0, 5).map(e => e.id); }
+      render();
+      setTimeout(() => $('#mlist')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+      break;
+    }
+    case 'mpick': {
+      const id = b.dataset.id, k = ui.pick.indexOf(id);
+      k < 0 ? ui.pick.push(id) : ui.pick.splice(k, 1);
+      const y = window.scrollY; render(); window.scrollTo(0, y);
+      break;
+    }
+    case 'mstart': {
+      if (S.active && getW(S.active)) { toast('Сначала заверши текущую тренировку'); go('workout', S.active); break; }
+      const { main, help } = libFor(ui.muscle);
+      const ex = [...main, ...help].filter(e => ui.pick.includes(e.id)).map(e => ({ ...e, tip: '' }));
+      if (!ex.length) break;
+      audio(); startWorkout('M', { title: `Акцент: ${mName(ui.muscle).toLowerCase()}`, ex });
       break;
     }
     case 'list-toggle': ui.list = !ui.list; ui.es = null; render(); window.scrollTo(0, 0); break;

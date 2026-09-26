@@ -179,7 +179,7 @@ details.warm summary span { color: var(--muted); font-weight: 500; font-size: 14
 @keyframes up { from { transform: translateY(120%); } to { transform: none; } }
 
 /* ---------- таб-бар ---------- */
-.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: grid; grid-template-columns: repeat(4, 1fr);
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: grid; grid-template-columns: repeat(5, 1fr);
   height: calc(var(--tabs-h) + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom);
   background: rgba(14, 15, 17, .92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid var(--line); }
 .tabs button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--faint); font-size: 11px; font-weight: 600;
@@ -344,6 +344,36 @@ select.sel { width: 100%; height: 48px; border-radius: 12px; background: var(--s
 .steps li { margin-bottom: 8px; font-size: 15px; line-height: 1.45; }
 .steps li::marker { color: var(--accent); font-weight: 800; }
 a.btn { text-decoration: none; }
+
+/* ---------- мышцы ---------- */
+.bodymap { width: 100%; height: auto; display: block; max-height: 440px; }
+.bm-base { fill: #2a2d33; }
+.bm { fill: #3a3e45; cursor: pointer; transition: fill 200ms var(--ease), fill-opacity 200ms var(--ease); stroke: var(--surface); stroke-width: 1.5; }
+.bm.hot { fill: var(--accent); }
+.bm.on { fill: var(--accent); fill-opacity: 1; stroke: var(--text); stroke-width: 2; }
+.bm-l { fill: var(--faint); font-size: 11px; }
+.mchips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 8px; }
+.mchips .chip { min-height: 40px; }
+.mx { display: flex; align-items: stretch; gap: 10px; background: var(--surface); border-radius: 16px; padding: 10px; margin-bottom: 8px; transition: box-shadow 200ms var(--ease); }
+.mx.on { box-shadow: inset 0 0 0 1.5px rgba(212, 255, 58, .5); }
+.mx-img { width: 76px; flex: none; border-radius: 10px; overflow: hidden; background: #fff; display: grid; place-items: center; min-height: 64px; }
+.mx-img img { width: 100%; height: 100%; object-fit: cover; }
+.mx-img span { color: #111; font-size: 20px; }
+.mx-main { flex: 1; min-width: 0; text-align: left; display: flex; flex-direction: column; gap: 3px; justify-content: center; }
+.mx-main b { font-size: 15.5px; line-height: 1.25; }
+.mx-main span { font-size: 13px; color: var(--muted); }
+.mx-main .prev { color: var(--faint); font-variant-numeric: tabular-nums; }
+.mx-main .also { color: var(--faint); font-size: 12px; }
+.mx-chk { width: 44px; flex: none; border-radius: 10px; background: var(--surface-2); display: grid; place-items: center; align-self: center; height: 44px; transition: background 160ms var(--ease), transform 160ms var(--ease); }
+.mx-chk:active { transform: scale(.92); }
+.mx-chk svg { width: 20px; height: 20px; stroke: var(--faint); stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.mx.on .mx-chk { background: var(--accent); }
+.mx.on .mx-chk svg { stroke: var(--accent-ink); }
+.mbar { position: sticky; bottom: calc(var(--tabs-h) + env(safe-area-inset-bottom) + 10px); margin-top: 14px; z-index: 4; }
+.mbar .btn { box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+.mbar .btn:disabled { background: var(--surface-2); color: var(--muted); }
+#mlist { scroll-margin-top: 12px; }
+.tabs button span { white-space: nowrap; }
 
 @media (prefers-reduced-motion: reduce) {
   .media img.b { animation: none; opacity: 0; }
