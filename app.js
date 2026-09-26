@@ -50,6 +50,34 @@ const WARMUP = [
   'Первый подход каждого упражнения — лёгкий',
 ];
 
+// техника: фото img/<id>-0.jpg / -1.jpg (free-exercise-db, Unlicense) + подсказки + поиск видео
+const TECH = {
+  pullup_w: { yt: 'подтягивания с отягощением техника', steps: ['Хват чуть шире плеч, гантель зажата между стоп.', 'Сначала опусти плечи и сведи лопатки, потом тяни грудь к перекладине.', 'Вниз 2–3 секунды до почти прямых рук, без рывков и раскачки.'] },
+  dips_w: { yt: 'отжимания на брусьях с отягощением техника', steps: ['Упор на прямых руках, гантель между стоп, корпус слегка вперёд.', 'Опускайся до 90° в локте, плечи не проваливаются вниз.', 'Выжимай себя вверх, локти широко не разводи.'] },
+  bss: { yt: 'болгарские выпады с гантелями техника', steps: ['Задняя нога носком на скамье, передняя — на большой шаг впереди.', 'Опускайся вертикально вниз, колено идёт по линии носка.', 'Толкайся пяткой передней ноги, корпус ровный.'] },
+  ohp: { yt: 'жим гантелей стоя техника', steps: ['Гантели у плеч, локти чуть впереди корпуса.', 'Выжимай вверх до прямых рук над головой.', 'Пресс и ягодицы в тонусе — поясница не прогибается.'] },
+  row: { yt: 'тяга гантели одной рукой в наклоне техника', steps: ['Упор рукой и коленом в скамью, спина ровная.', 'Тяни гантель к поясу локтем назад, а не бицепсом.', 'Вверху сожми лопатку, вниз — медленно.'] },
+  hlr: { yt: 'подъём ног в висе техника', steps: ['Вис на прямых руках, плечи чуть собраны.', 'Поднимай ноги до параллели с полом или выше.', 'Опускай медленно, без раскачки.'] },
+  goblet: { yt: 'гоблет присед с гантелью техника', steps: ['Гантель вертикально у груди, стопы чуть шире плеч.', 'Садись между коленями, спина ровная, локти внутри коленей.', 'Пауза 1 с внизу, вставай через пятки.'] },
+  rdl: { yt: 'румынская тяга с гантелями техника', steps: ['Гантели перед бёдрами, колени чуть согнуты и не меняют угол.', 'Отводи таз назад, гантели скользят по ногам, спина прямая.', 'Опускайся до натяжения сзади бедра и возвращайся, сжимая ягодицы.'] },
+  chin: { yt: 'подтягивания обратным хватом техника', steps: ['Хват ладонями к себе на ширине плеч.', 'Тяни грудь к перекладине, локти идут вниз к корпусу.', 'Вниз медленно до почти прямых рук.'] },
+  pushup_d: { yt: 'отжимания с ногами на возвышении техника', steps: ['Ноги на возвышении, руки чуть шире плеч, тело прямое.', 'Опускайся грудью к полу, локти под 45° к корпусу.', 'Пауза 1 с внизу, выжимай вверх без прогиба в пояснице.'] },
+  shrug: { yt: 'шраги с гантелями техника', steps: ['Гантели в опущенных руках по бокам.', 'Поднимай плечи прямо вверх к ушам — без вращений.', 'Держи 1 с вверху, опускай медленно.'] },
+  knees: { yt: 'подъём коленей в висе техника', steps: ['Вис на турнике или упор на брусьях.', 'Подтягивай колени к груди, скругляя поясницу.', 'Опускай медленно, без раскачки.'] },
+  pull_wide: { yt: 'подтягивания широким хватом техника', steps: ['Хват в полтора раза шире плеч, ладони от себя.', 'Тяни грудь к перекладине, думай «локти вниз».', 'Останавливайся, когда в запасе 1–2 повтора.'] },
+  dips_bw: { yt: 'отжимания на брусьях техника', steps: ['Упор на прямых руках, корпус почти вертикально.', 'Опускайся до 90° в локте, локти назад.', 'Выжимай вверх до прямых рук, не до отказа.'] },
+  dbpress: { yt: 'жим гантелей лёжа техника', steps: ['Лёжа на скамье или на полу, гантели над грудью.', 'Опускай к бокам груди, локти под 45°.', 'Выжимай вверх, лопатки сведены и прижаты.'] },
+  curl: { yt: 'сгибания рук с гантелями на бицепс техника', steps: ['Стоя, гантели в опущенных руках, ладони вперёд.', 'Сгибай руки, локти прижаты к корпусу.', 'Вниз медленно, корпусом не раскачивайся.'] },
+  french: { yt: 'французский жим с гантелью стоя техника', steps: ['Гантель двумя руками за головой, локти смотрят вверх.', 'Разгибай руки вверх — двигаются только предплечья.', 'Локти не разводи, опускай плавно.'] },
+  rlunge: { yt: 'выпады назад с гантелями техника', steps: ['Стоя, гантели в руках.', 'Шаг назад и вниз, пока заднее колено почти не коснётся пола.', 'Толкайся передней ногой и возвращайся в стойку.'] },
+  hang: { yt: 'вис на турнике лопаточные подтягивания', steps: ['Вис на прямых руках, спина и ноги расслаблены.', 'Лопаточные подтягивания: опускай плечи вниз, не сгибая рук.', 'Дыши спокойно — это разгрузка позвоночника.'] },
+  pushup_n: { yt: 'отжимания узким хватом техника', steps: ['Руки под плечами или чуть уже, тело прямое.', 'Локти идут назад вдоль корпуса.', 'Почти касаешься грудью пола и выжимаешь вверх.'] },
+  hammer: { yt: 'молотки на бицепс техника', steps: ['Гантели нейтральным хватом, ладони смотрят друг на друга.', 'Сгибай руки, локти неподвижны.', 'Вниз медленно.'] },
+  reardelt: { yt: 'разведение гантелей в наклоне задняя дельта', steps: ['Наклон почти до параллели с полом, спина ровная.', 'Разводи руки в стороны, локти чуть согнуты.', 'Лёгкий вес, без рывков.'] },
+  plank: { yt: 'планка техника', steps: ['Упор на предплечьях, локти под плечами.', 'Тело — прямая линия, пресс и ягодицы напряжены.', 'Не проваливай поясницу, дыши ровно.'] },
+};
+const SECONDS = ['hang', 'plank'];
+
 function defaults() {
   return {
     v: 1,
@@ -86,7 +114,7 @@ const plural = (n, a, b, c) => { const m10 = n % 10, m100 = n % 100; return m10 
 /* ================= состояние ================= */
 
 let S = load();
-const ui = { tab: 'today', wid: null, exId: null };
+const ui = { tab: 'today', wid: null, exId: null, list: false, es: null, slide: '' };
 
 function load() {
   try {
@@ -313,7 +341,7 @@ function viewToday() {
       ${yesterday && !doneToday ? `<div class="note">Вчера был ${esc(last.day)}. Если мышцы ещё забиты — возьми лёгкую <b>D</b> или перенеси на завтра.</div>` : ''}
       <div class="card hero">
         <div class="row"><div class="daytag">${nd}</div><div><div class="tiny muted">СЛЕДУЮЩАЯ ПО КРУГУ</div><b>${esc(def.title)}</b></div></div>
-        <ul class="exlist">${def.ex.map(e => `<li><span>${esc(e.name)}</span><span>${e.sets}×${e.min}–${e.max}</span></li>`).join('')}</ul>
+        <ul class="exlist">${def.ex.map(e => `<li><button data-a="tech" data-id="${esc(e.id)}">${TECH[e.id] ? `<img src="img/${e.id}-1.jpg" alt="" loading="lazy">` : ''}<span>${esc(e.name)}</span><span>${e.sets}×${e.min}–${e.max}</span></button></li>`).join('')}</ul>
         <button class="btn" data-a="start" data-d="${nd}">Начать ${nd}</button>
       </div>
       <div class="small muted" style="margin:14px 2px 8px">Или другую:</div>
@@ -365,16 +393,124 @@ function exCard(w, i) {
   </section>`;
 }
 
+/* ---------- режим «одно упражнение» ---------- */
+
+const focusMode = () => { const w = ui.tab === 'workout' && getW(ui.wid); return !!w && !w.done && !ui.list; };
+const firstOpen = e => e.sets.findIndex(s => !s.done);
+const unitOf = e => SECONDS.includes(e.exId) ? 'сек' : 'повт';
+function focusSet(e) { return ui.es != null && ui.es < e.sets.length ? ui.es : firstOpen(e); }
+function repsShown(e, j, prev) {
+  const s = e.sets[j], p = prev?.sets[j];
+  if (s.r) return s.r;
+  if (p && isPerformed(p)) return String(p.r);
+  const before = e.sets.slice(0, j).reverse().find(isPerformed);
+  return before ? String(before.r) : String(e.min);
+}
+const setTxt = (s, e) => `${e.kind !== 'bw' ? fmtW(s.w, e.kind) + '×' : ''}${s.r}`;
+
+function media(id, cls = '') {
+  if (!TECH[id]) return '';
+  return `<button class="media ${cls}" data-a="tech" data-id="${esc(id)}" aria-label="Как делать">
+    <img src="img/${id}-0.jpg" alt="" loading="lazy"><img class="b" src="img/${id}-1.jpg" alt="" loading="lazy">
+    <span class="media-l">Как делать ›</span></button>`;
+}
+
+function stepper(f, val, unit, ph) {
+  return `<div class="stp">
+    <button data-a="f-step" data-f="${f}" data-v="-1" aria-label="Меньше">−</button>
+    <label><input class="stp-in" data-f="${f}" inputmode="decimal" value="${esc(val)}" placeholder="${esc(ph)}"><small>${unit}</small></label>
+    <button data-a="f-step" data-f="${f}" data-v="1" aria-label="Больше">+</button>
+  </div>`;
+}
+
+function viewFocus(w) {
+  const n = w.entries.length;
+  if (w.pos == null || w.pos >= n) w.pos = Math.max(0, w.entries.findIndex(e => firstOpen(e) >= 0));
+  const i = w.pos, e = w.entries[i];
+  const j = focusSet(e);
+  const prev = lastEntry(e.exId, w.id);
+  const hasW = e.kind !== 'bw';
+  const allDone = w.entries.every(x => firstOpen(x) < 0);
+  const nextOpen = w.entries.findIndex((x, k) => k !== i && firstOpen(x) >= 0);
+
+  const segs = w.entries.map((x, k) => {
+    const d = x.sets.filter(s => s.done).length / x.sets.length;
+    return `<button class="fseg ${k === i ? 'cur' : ''}" data-a="f-jump" data-i="${k}" aria-label="${esc(x.name)}"><i style="width:${d * 100}%"></i></button>`;
+  }).join('');
+
+  let panel;
+  if (j < 0) {
+    panel = `<div class="fdone">
+      <div class="fdone-ic">${CHK}</div>
+      <b>Упражнение сделано</b>
+      <span>${e.sets.map(s => setTxt(s, e)).join(' · ')}</span>
+    </div>
+    ${allDone ? '<button class="btn xl" data-a="finish">Завершить тренировку</button>'
+      : `<button class="btn xl" data-a="f-jump" data-i="${nextOpen}">Дальше: ${esc(w.entries[nextOpen].name)}</button>`}`;
+  } else {
+    const s = e.sets[j], p = prev?.sets[j];
+    panel = `
+      <div class="fset-h"><b>Подход ${j + 1}<span> из ${e.sets.length}</span></b>
+        <span>${p && isPerformed(p) ? `прошлый раз <b>${setTxt(p, e)}</b>` : `цель ${e.min}–${e.max}`}</span></div>
+      ${hasW ? stepper('fw', s.w, e.kind === 'bw+' ? '+ кг к себе' : 'кг', e.kind === 'bw+' ? '0' : '—') : ''}
+      ${stepper('fr', repsShown(e, j, prev), unitOf(e), '')}
+      <button class="btn xl" data-a="f-done">${s.done ? 'Сохранить подход' : 'Подход сделан'}</button>`;
+  }
+
+  const chips = e.sets.map((s, k) => `<button class="chip ${s.done ? 'done' : ''} ${k === j ? 'cur' : ''}" data-a="f-edit" data-s="${k}">
+    <em>${k + 1}</em>${s.done ? setTxt(s, e) : ''}</button>`).join('');
+
+  const slide = ui.slide; ui.slide = '';
+  return `
+    <div class="wbar">
+      <div class="daytag ${w.day === 'D' ? 'd' : ''}">${w.day}</div>
+      <div class="t"><b>${esc(w.title)}</b><span id="elapsed"></span></div>
+      <button class="pill" data-a="list-toggle">Список</button>
+    </div>
+    <div class="fprog">${segs}</div>
+    <section class="fcard ${slide}" id="fcard">
+      <div class="fc-top"><span>Упражнение ${i + 1} из ${n}</span><span>${e.min}–${e.max} · отдых ${fmtClock(e.rest)}</span></div>
+      <h2 class="fc-name">${esc(e.name)}</h2>
+      ${media(e.exId) || `<button class="lnk" data-a="tech" data-id="${esc(e.exId)}">Как делать ›</button>`}
+      ${e.hint && j >= 0 ? `<div class="hint ${e.tone}">${esc(e.hint)}</div>` : ''}
+      <div class="fpanel">${panel}</div>
+      <div class="chips">${chips}<button class="chip add" data-a="add-set" data-e="${i}" aria-label="Добавить подход">+</button></div>
+    </section>
+    <div class="fnav">
+      <button class="pill" data-a="f-go" data-v="-1" ${i === 0 ? 'disabled' : ''}>‹ Назад</button>
+      ${allDone && j >= 0 ? '' : '<button class="pill" data-a="finish">Завершить</button>'}
+      <button class="pill" data-a="f-go" data-v="1" ${i === n - 1 ? 'disabled' : ''}>Дальше ›</button>
+    </div>`;
+}
+
+function exName(id) {
+  for (const d of Object.values(S.program)) { const x = d.ex.find(e => e.id === id); if (x) return x.name; }
+  for (const w of S.workouts) { const x = w.entries.find(e => e.exId === id); if (x) return x.name; }
+  return '';
+}
+function techSheet(id) {
+  const t = TECH[id], name = exName(id);
+  sheet(`<h3>${esc(name)}</h3>
+    ${t ? `<div class="tech-imgs">
+      <figure><img src="img/${id}-0.jpg" alt=""><figcaption>Старт</figcaption></figure>
+      <figure><img src="img/${id}-1.jpg" alt=""><figcaption>Финиш</figcaption></figure></div>
+      <ol class="steps">${t.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>` : '<p>Для своего упражнения фото нет — посмотри видео.</p>'}
+    <a class="btn ghost" href="https://www.youtube.com/results?search_query=${encodeURIComponent(t?.yt || name + ' техника')}" target="_blank" rel="noopener">▶ Видео техники на YouTube</a>
+    <div style="height:8px"></div>
+    <button class="btn" data-a="sheet-close">Понятно</button>`);
+}
+
 function viewWorkout() {
   const w = getW(ui.wid);
   if (!w) { ui.tab = 'today'; return viewToday(); }
+  if (!w.done && !ui.list) return viewFocus(w);
   const live = !w.done;
   const warmDone = w.warm.length;
   return `
     <div class="wbar">
       <div class="daytag ${w.day === 'D' ? 'd' : ''}">${w.day}</div>
       <div class="t"><b>${esc(w.title)}</b><span id="elapsed">${live ? '' : fmtDate(w.date) + ' · ' + fmtDur(w.end - w.start)}</span></div>
-      ${live ? '<button class="btn" data-a="finish">Завершить</button>' : '<button class="btn ghost" data-a="tab" data-t="history">Готово</button>'}
+      ${live ? '<button class="pill" data-a="list-toggle">По одному</button>' : '<button class="btn ghost" data-a="tab" data-t="history">Готово</button>'}
     </div>
     ${live && w.deload ? '<div class="note warn">Разгрузочная неделя — подходов меньше, не до отказа.</div>' : ''}
     ${live ? `<details class="warm" ${warmDone < WARMUP.length ? 'open' : ''}>
@@ -573,16 +709,28 @@ function beep() {
   } catch (e) {}
   try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch (e) {}
 }
-function startRest(sec) { S.timer = { end: Date.now() + sec * 1000, total: sec, beeped: false }; saveSoon(); runRest(); }
-function stopRest() { S.timer = null; saveSoon(); clearInterval(restT); $('#rest').hidden = true; $('#rest').classList.remove('over'); document.body.classList.remove('resting'); }
+function startRest(sec, next = '') { S.timer = { end: Date.now() + sec * 1000, total: sec, beeped: false, next }; saveSoon(); runRest(); }
+function stopRest() {
+  S.timer = null; saveSoon(); clearInterval(restT);
+  $('#rest').hidden = true; $('#rest').classList.remove('over'); $('#restFull').hidden = true; document.body.classList.remove('resting');
+}
 function runRest() {
   clearInterval(restT);
-  const el = $('#rest'); el.hidden = false; document.body.classList.add('resting');
   const f = () => {
     if (!S.timer) return stopRest();
+    const full = focusMode();
+    const el = full ? $('#restFull') : $('#rest');
+    $('#rest').hidden = full; $('#restFull').hidden = !full;
+    document.body.classList.toggle('resting', !full);
     const left = (S.timer.end - Date.now()) / 1000;
-    $('#restTime').textContent = left > 0 ? fmtClock(left) : '+' + fmtClock(-left);
-    $('#ringFg').style.strokeDashoffset = 119.4 * (1 - Math.max(0, left) / S.timer.total);
+    const txt = left > 0 ? fmtClock(left) : '+' + fmtClock(-left);
+    const frac = 1 - Math.max(0, left) / S.timer.total;
+    $('#restTime').textContent = txt; $('#rfTime').textContent = txt;
+    $('#ringFg').style.strokeDashoffset = 119.4 * frac;
+    $('#rfRing').style.strokeDashoffset = 565.5 * frac;
+    $('#rfNext').textContent = S.timer.next || '';
+    $('#rfLabel').textContent = left > 0 ? 'Отдых' : 'Поехали!';
+    $('#rfSkip').textContent = left > 0 ? 'Пропустить' : 'Начать подход';
     el.classList.toggle('over', left <= 0);
     $('.rest-txt small').textContent = left > 0 ? 'Отдых' : 'Поехали';
     if (left <= 0 && !S.timer.beeped) { S.timer.beeped = true; saveSoon(); beep(); }
@@ -702,7 +850,57 @@ document.addEventListener('click', e => {
     }
     case 'add-set': {
       const en = w.entries[+b.dataset.e], last = en.sets[en.sets.length - 1];
-      en.sets.push({ w: last ? last.w : '', r: '', done: false }); save(); refreshCard(+b.dataset.e); break;
+      en.sets.push({ w: last ? last.w : '', r: '', done: false }); save();
+      if (focusMode()) { ui.es = null; render(); } else refreshCard(+b.dataset.e);
+      break;
+    }
+    case 'list-toggle': ui.list = !ui.list; ui.es = null; render(); window.scrollTo(0, 0); break;
+    case 'tech': techSheet(b.dataset.id); break;
+    case 'f-jump': case 'f-go': {
+      const to = a === 'f-jump' ? +b.dataset.i : w.pos + +b.dataset.v;
+      if (to < 0 || to >= w.entries.length || to === w.pos) break;
+      ui.slide = to > w.pos ? 'from-r' : 'from-l'; w.pos = to; ui.es = null; save(); render(); window.scrollTo(0, 0);
+      break;
+    }
+    case 'f-edit': ui.es = +b.dataset.s; render(); break;
+    case 'f-step': {
+      const en = w.entries[w.pos], j = focusSet(en); if (j < 0) break;
+      const s = en.sets[j], dv = +b.dataset.v;
+      const inp = document.querySelector(`.stp-in[data-f="${b.dataset.f}"]`);
+      if (b.dataset.f === 'fw') {
+        const old = s.w;
+        const v = Math.max(0, Math.round(((num(s.w) || 0) + dv * S.settings.step) * 100) / 100);
+        s.w = fmtKg(v);
+        en.sets.forEach((x, k) => { if (k > j && !x.done && x.w === old) x.w = s.w; });   // следующие подходы — тем же весом
+        inp.value = s.w;
+      } else {
+        const v = Math.max(0, (num(inp.value) || 0) + dv * (SECONDS.includes(en.exId) ? 5 : 1));
+        s.r = String(v); inp.value = s.r;
+      }
+      inp.parentElement.classList.remove('bump'); void inp.offsetWidth; inp.parentElement.classList.add('bump');
+      saveSoon(); break;
+    }
+    case 'f-done': {
+      audio();
+      const i = w.pos, en = w.entries[i], j = focusSet(en); if (j < 0) break;
+      const s = en.sets[j];
+      const rv = num(document.querySelector('.stp-in[data-f="fr"]').value);
+      if (!rv) { toast('Сколько повторов сделал?'); break; }
+      s.r = String(rv);
+      const wasDone = s.done; s.done = true; ui.es = null;
+      if (!wasDone) {
+        const nj = firstOpen(en);
+        if (nj >= 0) {
+          startRest(en.rest, `Дальше: подход ${nj + 1} из ${en.sets.length}${en.kind !== 'bw' ? ' · ' + fmtW(en.sets[nj].w, en.kind) + ' кг' : ''}`);
+        } else {
+          const ni = w.entries.findIndex((x, k) => k > i && firstOpen(x) >= 0);
+          const nk = ni >= 0 ? ni : w.entries.findIndex(x => firstOpen(x) >= 0);
+          if (nk >= 0) { startRest(en.rest, `Дальше: ${w.entries[nk].name}`); w.pos = nk; ui.slide = 'from-r'; }
+          else toast('Все подходы сделаны 💪');
+        }
+      }
+      save(); render(); window.scrollTo(0, 0); tickElapsed();
+      break;
     }
     case 'del-set': { const en = w.entries[+b.dataset.e]; en.sets.pop(); save(); refreshCard(+b.dataset.e); break; }
     case 'warm': {
@@ -751,6 +949,11 @@ document.addEventListener('input', e => {
   if (!f) return;
   const w = getW(ui.wid);
   if (f === 'w' || f === 'r') { w.entries[+t.dataset.e].sets[+t.dataset.s][f] = t.value.trim(); saveSoon(); return; }
+  if (f === 'fw' || f === 'fr') {
+    const en = w.entries[w.pos], j = focusSet(en);
+    if (j >= 0) { en.sets[j][f === 'fw' ? 'w' : 'r'] = t.value.trim(); saveSoon(); }
+    return;
+  }
   if (f === 'note') { w.entries[+t.dataset.e].note = t.value; saveSoon(); return; }
   if (f === 'set-bw') { const v = num(t.value); if (v) { S.settings.bw = v; saveSoon(); } return; }
   if (f === 'set-step') { const v = num(t.value); if (v) { S.settings.step = v; saveSoon(); } return; }
@@ -771,11 +974,25 @@ document.addEventListener('change', e => {
 
 // чтобы клавиатура на телефоне не закрывала поле
 document.addEventListener('focusin', e => {
-  if (e.target.matches('.inp')) { e.target.select?.(); setTimeout(() => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300); }
+  if (e.target.matches('.inp, .stp-in')) { e.target.select?.(); setTimeout(() => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300); }
 });
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && S.active) wakeLock(true);
   if (document.visibilityState === 'hidden') save();
+});
+
+let touch;
+document.addEventListener('touchstart', e => {
+  touch = focusMode() && !e.target.closest('input, .stp, .media') ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  if (!touch) return;
+  const dx = e.changedTouches[0].clientX - touch.x, dy = e.changedTouches[0].clientY - touch.y;
+  touch = null;
+  if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+  const w = getW(ui.wid), to = w.pos + (dx < 0 ? 1 : -1);
+  if (to < 0 || to >= w.entries.length) return;
+  ui.slide = dx < 0 ? 'from-r' : 'from-l'; w.pos = to; ui.es = null; save(); render(); window.scrollTo(0, 0);
 });
 
 /* ================= старт ================= */

@@ -25,6 +25,20 @@
   <button class="pill pill-accent" data-a="rest-skip">Готов</button>
 </div>
 
+<div id="restFull" class="restfull" hidden>
+  <small id="rfLabel">Отдых</small>
+  <div class="rf-ring">
+    <svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="90" class="ring-bg"/><circle cx="100" cy="100" r="90" class="ring-fg" id="rfRing"/></svg>
+    <b id="rfTime">0:00</b>
+  </div>
+  <div class="rf-next" id="rfNext"></div>
+  <div class="row" style="justify-content:center">
+    <button class="pill" data-a="rest-add" data-v="-15">−15 с</button>
+    <button class="pill" data-a="rest-add" data-v="15">+15 с</button>
+  </div>
+  <button class="btn" id="rfSkip" data-a="rest-skip">Пропустить</button>
+</div>
+
 <nav class="tabs" id="tabs">
   <button data-a="tab" data-t="today"><svg viewBox="0 0 24 24"><path d="M6.5 8v8M17.5 8v8M3.5 10v4M20.5 10v4M6.5 12h11"/></svg><span>Сегодня</span></button>
   <button data-a="tab" data-t="history"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><span>История</span></button>
