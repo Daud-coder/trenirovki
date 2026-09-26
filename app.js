@@ -289,7 +289,7 @@ function go(tab, wid) { ui.tab = tab; if (wid !== undefined) ui.wid = wid; rende
 
 function render() {
   const v = $('#view');
-  v.className = ui.tab === 'workout' ? 'wk' : '';
+  v.className = ui.tab === 'workout' ? 'wk' : ui.tab;
   v.innerHTML = { today: viewToday, workout: viewWorkout, history: viewHistory, progress: viewProgress, settings: viewSettings, muscles: viewMuscles }[ui.tab]();
   const navTab = ui.tab === 'workout' ? (getW(ui.wid)?.done ? 'history' : 'today') : ui.tab;
   document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === navTab));
@@ -648,9 +648,10 @@ function viewMuscles() {
         ${picked.length ? `Начать · ${picked.length} упр. · ~${mins} мин` : 'Выбери упражнения'}</button></div>`;
   }
   return `<div class="top"><div><h1>Мышцы</h1><div class="sub">Что сегодня качаем? Цвет — нагрузка за 7 дней</div></div></div>
+    <div class="cols muscles-cols"><div class="col mleft">
     <div class="card">${bodyMap(load)}</div>
     <div class="mchips">${MUSCLES.map(m => `<button class="chip ${ui.muscle === m.id ? 'cur' : ''} ${load[m.id] ? 'done' : ''}" data-a="muscle" data-m="${m.id}">${esc(m.name)}${load[m.id] ? ` <em>${Math.round(load[m.id])}</em>` : ''}</button>`).join('')}</div>
-    ${list}`;
+    </div><div class="col">${list || '<div class="empty desk-only">← Выбери мышцу на силуэте</div>'}</div></div>`;
 }
 
 /* ---------- История ---------- */
@@ -742,6 +743,7 @@ function viewProgress() {
   }).filter(Boolean);
 
   return `<div class="top"><div><h1>Прогресс</h1><div class="sub">${doneWorkouts().length} ${plural(doneWorkouts().length, 'тренировка', 'тренировки', 'тренировок')}</div></div></div>
+    <div class="cols"><div class="col">
     ${bwCard}
     <h2>Упражнение</h2>
     <select class="sel" data-f="exsel">${[...seen.entries()].map(([id, n]) => `<option value="${esc(id)}" ${id === ui.exId ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>
@@ -754,12 +756,15 @@ function viewProgress() {
       <div class="stat"><b style="color:${diff > 0 ? 'var(--accent)' : 'var(--text)'}">${diff > 0 ? '+' : ''}${diff}%</b><span>с первого раза</span></div>
       <div class="stat"><b>${hist.length}</b><span>${plural(hist.length, 'сессия', 'сессии', 'сессий')}</span></div>
     </div>
+    </div><div class="col">
+    <h2 class="desk-only">Последние сессии</h2>
     <div class="card">
       ${hist.slice(-8).reverse().map(({ w, e }) => `<div class="sess"><span>${fmtDateShort(w.date)}</span><span>${e.sets.filter(isPerformed).map(s => e.kind === 'bw' ? s.r : `${fmtW(s.w, e.kind)}×${s.r}`).join(' · ')}</span></div>`).join('')}
     </div>
     <h2>Личные рекорды</h2>
     <div class="card">${prs.map(p => `<div class="pr"><span>${esc(p.name)}</span><b>${p.txt}</b></div>`).join('')}</div>
-    <div class="tiny muted" style="margin:0 4px 20px">Для «+ вес» учитывается свой вес тела + гантель.</div>`;
+    <div class="tiny muted" style="margin:0 4px 20px">Для «+ вес» учитывается свой вес тела + гантель.</div>
+    </div></div>`;
 }
 
 /* ---------- Программа / настройки ---------- */
@@ -767,7 +772,18 @@ function viewProgress() {
 function viewSettings() {
   const st = S.settings;
   const dayOrder = [1, 2, 3, 4, 5, 6, 0];
+  const data = `<h2>Данные</h2>
+    <div class="card">
+      <p class="small muted" style="margin:0 0 12px">Всё хранится только на этом устройстве. Раз в пару недель делай копию — отправь файл себе в Telegram.</p>
+      <button class="btn sm" data-a="export">Сохранить копию</button>
+      <div style="height:8px"></div>
+      <button class="btn sm ghost" data-a="import">Восстановить из копии</button>
+      <button class="btn danger" data-a="reset-program">Вернуть программу по умолчанию</button>
+    </div>
+    <div class="tiny muted" style="text-align:center;margin:10px 0 20px">Двойная прогрессия: все подходы на верхней границе → +шаг веса. 6-я неделя — разгрузка.</div>`;
   return `<div class="top"><div><h1>Программа</h1><div class="sub">круг A → B → C, D — доп. по желанию</div></div></div>
+    <div class="cols settings-cols"><div class="col">
+    <h2 class="desk-only">Настройки</h2>
     <div class="card">
       <div class="field" style="display:block"><label>Обычные дни тренировок<small>Любой день можно перенести тапом на экране «Сегодня»</small></label>
         <div class="days">${dayOrder.map(d => `<button class="${st.days.includes(d) ? 'on' : ''}" data-a="day" data-d="${d}">${WD[d]}</button>`).join('')}</div></div>
@@ -775,9 +791,11 @@ function viewSettings() {
       <div class="field"><label>Шаг гантели, кг<small>на сколько прибавлять</small></label><input data-f="set-step" inputmode="decimal" value="${fmtKg(st.step)}"></div>
       <div class="field"><label>Макс. вес одной гантели<small>пусто — без ограничения</small></label><input data-f="set-dbmax" inputmode="decimal" value="${st.dbMax ? fmtKg(st.dbMax) : ''}" placeholder="—"></div>
     </div>
+    <div class="desk-only">${data}</div>
+    </div><div class="col days-grid">
     ${['A', 'B', 'C', 'D'].map(d => {
       const p = S.program[d];
-      return `<h2>День ${d}${d === 'D' ? ' · доп' : ''}</h2><div class="card">
+      return `<div><h2>День ${d}${d === 'D' ? ' · доп' : ''}</h2><div class="card">
         <input class="nm" style="width:100%;background:transparent;border:0;font-size:17px;font-weight:800;outline:none;margin-bottom:4px" data-f="p-title" data-d="${d}" value="${esc(p.title)}">
         ${p.ex.map((e, i) => `<div class="pex">
           <input class="nm" data-f="p-name" data-d="${d}" data-i="${i}" value="${esc(e.name)}">
@@ -792,17 +810,10 @@ function viewSettings() {
           <div class="acts">${i ? `<button data-a="p-up" data-d="${d}" data-i="${i}">↑ выше</button>` : ''}<button class="del" data-a="p-del" data-d="${d}" data-i="${i}">удалить</button></div>
         </div>`).join('')}
         <button class="lnk" data-a="p-add" data-d="${d}">+ добавить упражнение</button>
-      </div>`;
+      </div></div>`;
     }).join('')}
-    <h2>Данные</h2>
-    <div class="card">
-      <p class="small muted" style="margin:0 0 12px">Всё хранится только в этом телефоне. Раз в пару недель делай копию — отправь файл себе в Telegram.</p>
-      <button class="btn sm" data-a="export">Сохранить копию</button>
-      <div style="height:8px"></div>
-      <button class="btn sm ghost" data-a="import">Восстановить из копии</button>
-      <button class="btn danger" data-a="reset-program">Вернуть программу по умолчанию</button>
-    </div>
-    <div class="tiny muted" style="text-align:center;margin:10px 0 20px">Двойная прогрессия: все подходы на верхней границе → +шаг веса. 6-я неделя — разгрузка.</div>`;
+    </div></div>
+    <div class="mob-only">${data}</div>`;
 }
 
 /* ================= таймер отдыха ================= */

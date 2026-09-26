@@ -375,6 +375,43 @@ a.btn { text-decoration: none; }
 #mlist { scroll-margin-top: 12px; }
 .tabs button span { white-space: nowrap; }
 
+/* ---------- компьютер: шире, в две колонки ---------- */
+.desk-only { display: none; }
+@media (min-width: 900px) {
+  .desk-only { display: block; }
+  .mob-only { display: none; }
+  main { max-width: min(70vw, 1400px); padding-left: 24px; padding-right: 24px; }
+  .wbar { margin-left: -24px; margin-right: -24px; padding-left: 24px; padding-right: 24px; }
+  .top h1 { font-size: 36px; }
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .col > h2:first-child, .col > .desk-only:first-child > h2:first-child { margin-top: 0; }
+  .settings-cols { grid-template-columns: minmax(300px, 1fr) minmax(0, 2fr); }
+  .days-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; align-content: start; }
+  .days-grid h2 { margin-top: 0; }
+  .muscles-cols { grid-template-columns: minmax(320px, .9fr) minmax(0, 1.1fr); }
+  .muscles-cols .mleft { position: sticky; top: 16px; }
+  .muscles-cols .col:last-child > h2:first-of-type { margin-top: 0; }
+  .muscles-cols .empty { padding-top: 120px; }
+  .exlist { display: grid; grid-template-columns: 1fr 1fr; column-gap: 28px; }
+  .week { gap: 10px; }
+  main.history { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 12px; align-content: start; }
+  main.history > .top, main.history > .stats, main.history > .month, main.history > .empty { grid-column: 1 / -1; }
+  main.today .card.hero { padding: 28px; }
+  .chart { max-height: 320px; }
+
+  .fcard { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); column-gap: 28px; padding: 24px;
+    grid-template-areas: "top top" "name name" "media panel" "hint panel" "chips panel" ". panel"; grid-template-rows: auto auto auto auto auto 1fr; }
+  .fcard > .fc-top { grid-area: top; }
+  .fcard > .fc-name { grid-area: name; font-size: 32px; }
+  .fcard > .media, .fcard > .lnk { grid-area: media; align-self: start; }
+  .fcard > .hint { grid-area: hint; margin-left: 0; margin-right: 0; }
+  .fcard > .fpanel { grid-area: panel; margin-top: 0; }
+  .fcard > .chips { grid-area: chips; }
+  .fcard .media { aspect-ratio: 4 / 3; }
+  .rest, .tabs { max-width: none; }
+  .sheet-body { border-radius: 22px 22px 0 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .media img.b { animation: none; opacity: 0; }
   *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
