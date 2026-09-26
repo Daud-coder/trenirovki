@@ -107,6 +107,9 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: v
   background: rgba(14, 15, 17, .88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
   display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); }
 .wbar .t { flex: 1; min-width: 0; }
+.back { width: 40px; height: 44px; margin-left: -8px; display: grid; place-items: center; border-radius: 12px; flex: none; transition: transform 160ms var(--ease); }
+.back:active { transform: scale(.92); background: var(--surface-2); }
+.back svg { width: 26px; height: 26px; fill: none; stroke: var(--text); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 .wbar .t b { display: block; font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .wbar .t span { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .wbar .btn { width: auto; padding: 0 18px; min-height: 42px; font-size: 15px; }

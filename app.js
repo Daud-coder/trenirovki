@@ -463,6 +463,7 @@ function viewFocus(w) {
   const slide = ui.slide; ui.slide = '';
   return `
     <div class="wbar">
+      <button class="back" data-a="back" aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
       <div class="daytag ${w.day === 'D' ? 'd' : ''}">${w.day}</div>
       <div class="t"><b>${esc(w.title)}</b><span id="elapsed"></span></div>
       <button class="pill" data-a="list-toggle">Список</button>
@@ -508,6 +509,7 @@ function viewWorkout() {
   const warmDone = w.warm.length;
   return `
     <div class="wbar">
+      <button class="back" data-a="back" aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
       <div class="daytag ${w.day === 'D' ? 'd' : ''}">${w.day}</div>
       <div class="t"><b>${esc(w.title)}</b><span id="elapsed">${live ? '' : fmtDate(w.date) + ' · ' + fmtDur(w.end - w.start)}</span></div>
       ${live ? '<button class="pill" data-a="list-toggle">По одному</button>' : '<button class="btn ghost" data-a="tab" data-t="history">Готово</button>'}
@@ -910,6 +912,16 @@ document.addEventListener('click', e => {
       save(); break;
     }
     case 'finish': finishWorkout(); break;
+    case 'back': {
+      if (!w || w.done) { go('history'); break; }
+      if (setsDone(w)) { stopRest(); go('today'); toast('Тренировка на паузе — «Продолжить» на главной'); break; }
+      sheet(`<h3>Выйти из тренировки?</h3><p>Пока ни одного подхода не записано.</p>
+        <button class="btn" data-a="cancel-yes">Выйти, не начинать</button>
+        <button class="btn ghost" data-a="pause">Оставить открытой</button>
+        <button class="btn ghost" data-a="sheet-close">Остаться</button>`);
+      break;
+    }
+    case 'pause': closeSheet(); stopRest(); go('today'); break;
     case 'cancel': confirmSheet('Отменить тренировку?', 'Все вписанные подходы этой тренировки удалятся.', { a: 'cancel-yes' }, 'Да, удалить', true); break;
     case 'cancel-yes':
       S.workouts = S.workouts.filter(x => x.id !== S.active); S.active = null; stopRest(); save(); closeSheet(); wakeLock(false); go('today'); break;
